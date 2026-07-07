@@ -15,7 +15,30 @@ const encodeUrl = async(baseUrl: string) => {
         }
     }
 }
-
+const checkUrl=async(req: Request, res: Response) =>{
+    const url = req.query.url;
+    if (typeof url !== "string")
+        res.status(400).json({
+            status: 400,
+            message: 'Bad request'
+        });
+    else{
+        if(await urlRepository.checkShort(url))
+        {
+            req.query.shortUrl=url
+            return res.redirect(301,`/api/url/short?shortUrl=${url}`)
+        }
+        if(await urlRepository.checkStatistics(url))
+        {
+            req.query.statisticsUrl=url
+            return res.redirect(301,`/api/url/statistics?statisticsUrl=${url}`)
+        }
+        res.status(404).json({
+            status: 404,
+            message: 'Not found'
+        });
+    }
+}
 const getBaseUrl = async (req: Request, res: Response, next: NextFunction) => {
     const shortUrl = req.query.shortUrl;
     if (typeof shortUrl !== "string")
@@ -42,7 +65,7 @@ const getStatistics = async(req: Request, res: Response) => {
         });
     else {
         const result=await urlRepository.getStats(statisticsUrl);
-        res.status(201).json(result)
+        res.status(200).json(result)
     }
 }
 const createUrl = async(req: Request, res: Response) => {
@@ -62,4 +85,4 @@ const createUrl = async(req: Request, res: Response) => {
     }
 }
 
-export { getBaseUrl, getStatistics, createUrl }
+export { getBaseUrl, getStatistics, createUrl,checkUrl }

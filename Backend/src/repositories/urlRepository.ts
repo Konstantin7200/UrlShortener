@@ -23,5 +23,13 @@ export const urlRepository={
    checkCollision:async(shortUrl:string,statsUrl:string)=>{
         const response=await pool.query(`SELECT * FROM "Urls" WHERE "statisticsUrl"=$1 OR "shortUrl"=$1 OR "statisticsUrl"=$2 OR "shortUrl"=$2`,[shortUrl,statsUrl])
         return response.rows.length!==0
-   }
+   },
+   checkShort:async(shortUrl:string)=>{
+        const response=await pool.query(`SELECT * FROM "Urls" WHERE "shortUrl"=$1`,[shortUrl])
+        return response.rows.length!==0
+   },
+   checkStatistics:async(statsUrl:string)=>{
+        const response=await pool.query(`SELECT * FROM "Urls" WHERE "statisticsUrl"=$1`,[statsUrl])
+        return response.rows.length!==0
+   },
 }
