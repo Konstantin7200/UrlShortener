@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public."Visitors" (
     "visitingDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "ip" TEXT NOT NULL,
     "browser" TEXT NOT NULL,
+    "browserVersion" TEXT NOT NULL,
     "region" TEXT NOT NULL,
     "os" TEXT NOT NULL
 );
