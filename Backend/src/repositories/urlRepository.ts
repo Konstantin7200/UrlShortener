@@ -1,14 +1,22 @@
+import pool from "../db"
 
 
 
 export const urlRepository={
-    createUrls:(baseUrl:string)=>{
-
+    createUrls:async(baseUrl:string,shortUrl:string,statsUrl:string)=>{
+        const response=await pool.query(`INSERT INTO "Urls"("baseUrl","shortUrl","statisticsUrl") VALUES($1,$2,$3) RETURNING *`,[baseUrl,shortUrl,statsUrl]);
+        return response.rows[0]
     },
-    getLongUrl:(shortUrl:string)=>{
-
+    getLongUrl:async(shortUrl:string)=>{
+        const response=await pool.query(`SELECT id,"baseUrl" FROM "Urls" WHERE "shortUrl"=$1`,[shortUrl])
+        if(response.rows[0])
+        {
+            const {id,baseUrl}=response.rows[0]
+            return baseUrl
+        }
     },
-    getStats:(statsUrl:string)=>{
-        
-    }
+    getStats:async(statsUrl:string)=>{
+        const response=await pool.query(`SELECT * FROM "Visitors INNER JOIN "Urls" ON "Urls.id"="Visitors.urlId" WHERE "statsUrl"=$1`,[statsUrl])
+        return response.rows
+   }
 }

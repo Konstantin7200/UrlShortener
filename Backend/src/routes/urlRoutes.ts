@@ -41,7 +41,7 @@ app.post("/api/url", (req: Request, res: Response) => {
             message: 'Bad request'
         });
     else {
-        urlRepository.createUrls(baseUrl);
+        urlRepository.createUrls("","","");
         res.status(201).json({
             shortUrl: "",
             statisticsUrl: ""
