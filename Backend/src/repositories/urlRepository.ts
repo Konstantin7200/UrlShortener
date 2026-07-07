@@ -17,11 +17,11 @@ export const urlRepository={
         return {id:-1,baseUrl:""}
     },
     getStats:async(statsUrl:string)=>{
-        const response=await pool.query(`SELECT * FROM "Visitors" INNER JOIN "Urls" ON "Urls.id"="Visitors.urlId" WHERE "statsUrl"=$1`,[statsUrl])
+        const response=await pool.query(`SELECT "visitingDate",ip,browser,"browserVersion",region,os FROM "Visitors" INNER JOIN "Urls" ON "Urls".id="Visitors"."urlId" WHERE "statisticsUrl"=$1`,[statsUrl])
         return response.rows
    },
    checkCollision:async(shortUrl:string,statsUrl:string)=>{
-        const response=await pool.query(`SELECT * FROM "Urls" WHERE "baseUrl"=$1 OR "shortUrl"=$1 OR "baseUrl"=$2 OR "shortUrl"=$2`,[shortUrl,statsUrl])
+        const response=await pool.query(`SELECT * FROM "Urls" WHERE "statisticsUrl"=$1 OR "shortUrl"=$1 OR "statisticsUrl"=$2 OR "shortUrl"=$2`,[shortUrl,statsUrl])
         return response.rows.length!==0
    }
 }

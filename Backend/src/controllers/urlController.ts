@@ -33,16 +33,16 @@ const getBaseUrl = async (req: Request, res: Response, next: NextFunction) => {
         res.status(404)
     }
 }
-const getStatistics = (req: Request, res: Response) => {
-    const statsUrl = req.query.statsUrl;
-    if (typeof statsUrl !== "string")
+const getStatistics = async(req: Request, res: Response) => {
+    const statisticsUrl = req.query.statisticsUrl;
+    if (typeof statisticsUrl !== "string")
         res.status(400).json({
             status: 400,
             message: 'Bad request'
         });
     else {
-        urlRepository.getStats(statsUrl);
-        res.status(201).json([])
+        const result=await urlRepository.getStats(statisticsUrl);
+        res.status(201).json(result)
     }
 }
 const createUrl = async(req: Request, res: Response) => {

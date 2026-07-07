@@ -1,4 +1,3 @@
-import { version } from "node:os"
 import { UAParser } from "ua-parser-js"
 
 
