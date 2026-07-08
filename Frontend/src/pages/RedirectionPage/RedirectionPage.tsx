@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react"
-
+import { useParams } from "react-router"
 
 export const RedirectionPage=()=>{
-
+    const params=useParams()
+    useEffect(()=>{
+        
+    },[params.url])
     return(
         <div className="h-screen w-screen flex-col gap-2 flex items-center justify-center">
             <div className="flex flex-row">
