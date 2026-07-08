@@ -22,12 +22,12 @@ export const HomePage = () => {
                 <input value={input} onChange={(e) => setInput(e.target.value)} id="urlInput" className="p-4 text-xl rounded-xl border border-black outline-none shadow-md w-full" />
                 <button className={`p-4 ${input.trim().length === 0 ? "bg-gray-300" : "bg-gray-600"} cursor-pointer duration-300 hover:${input.trim().length !== 0 && "bg-black"} rounded-3xl text-white text-2xl`} onClick={handleClick} disabled={input.trim().length === 0}>Create short link</button>
             </div>
-            <div className="flex flex-col gap-8 desktop:flex-row w-full">
-                <div className="bg-zinc-400 flex-col text-2xl flex items-center w-full h-12">
+            <div className="flex flex-col items-center justify-center gap-8 desktop:flex-row w-full">
+                <div className="border border-zinc-400 shadow-sm rounded-md flex-col text-2xl flex items-center w-9/10 p-4 desktop:w-1/4">
                     <h2>Short link</h2>
                     <p>{shortLink}</p>
                 </div>
-                <div className="bg-zinc-400 flex-col text-2xl flex items-center w-full h-12">
+                <div className="border border-zinc-400 shadow-sm rounded-md flex-col text-2xl flex items-center w-9/10 p-4 desktop:w-1/4">
                     <h2>Statistics link</h2>
                     <p>{statsLink}</p>
                 </div>

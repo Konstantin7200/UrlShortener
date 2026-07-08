@@ -53,7 +53,10 @@ const getBaseUrl = async (req: Request, res: Response, next: NextFunction) => {
             res.locals.baseUrl = baseUrl
             return next()
         }
-        res.status(404)
+        res.status(404).json({
+            status: 404,
+            message: 'Not found'
+        })
     }
 }
 const getStatistics = async(req: Request, res: Response) => {
@@ -77,7 +80,7 @@ const createUrl = async(req: Request, res: Response) => {
         });
     else {
         const {shortUrl,statsUrl}=await encodeUrl(baseUrl)
-        urlRepository.createUrls(baseUrl, shortUrl, statsUrl);
+        await urlRepository.createUrls(baseUrl, shortUrl, statsUrl);
         res.status(201).json({
             shortUrl: shortUrl,
             statisticsUrl: statsUrl
