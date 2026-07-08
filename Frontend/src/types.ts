@@ -1,6 +1,6 @@
 type statsResponse = {
     type: "stats",
-    body: any[]
+    body: userData[]
 }
 type redirectResponse = {
     type: "redirect",
@@ -17,4 +17,12 @@ type urlResponse={
         statisticsUrl:string
     }
 }
-export type {statsResponse,redirectResponse,errorResponse,urlResponse}
+type userData={
+    visitingDate:string,
+    ip:string,
+    browser:string,
+    browserVersion:string,
+    region:string,
+    os:string
+}
+export type {statsResponse,redirectResponse,errorResponse,urlResponse,userData}
