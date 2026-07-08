@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { redirect, useNavigate, useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { API } from "../../endpoints"
 import { useDispatch } from "react-redux"
 import { setStats } from "../../store/statsSlice"
@@ -12,7 +12,8 @@ export const RedirectionPage=()=>{
         async function fetchData() {
             const data=await API.getUrlData(params.url!)
             if(data.type==="redirect"){
-                redirect(data.body);
+                console.log(data.body)
+                window.location.replace(data.body);
             }
             if(data.type==="stats"){
                 dispatch(setStats(data.body))

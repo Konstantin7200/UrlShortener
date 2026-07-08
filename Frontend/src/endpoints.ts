@@ -3,7 +3,7 @@ import type { errorResponse, redirectResponse, statsResponse, urlResponse } from
 const APIBase = import.meta.env.VITE_API_URL||""
 export const API = {
     async getUrlData(url: string): Promise<statsResponse | redirectResponse | errorResponse> {
-        const params = new URLSearchParams({ urL: url })
+        const params = new URLSearchParams({ url: url })
         const response = await fetch(`${APIBase}/api/url?${params}`)
         if (response.status != 200) {
             return {
@@ -19,7 +19,7 @@ export const API = {
             }
         return {
             type: "redirect",
-            body: data
+            body: data.baseUrl
         }
     },
     async createNewUrl(baseUrl: string):Promise<errorResponse|urlResponse> {
