@@ -8,7 +8,8 @@ type redirectResponse = {
 }
 type errorResponse = {
     type: "error"
-    body: number
+    code: number,
+    message:string
 }
 type urlResponse={
     type:"urls"

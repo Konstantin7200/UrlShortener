@@ -6,9 +6,16 @@ export const API = {
         const params = new URLSearchParams({ url: url })
         const response = await fetch(`${APIBase}/api/url?${params}`)
         if (response.status != 200) {
+            let message:string="";
+            try{
+                let data=await response.json()
+                message=data.message
+            }
+            catch{}
             return {
                 type: "error",
-                body: response.status
+                code:response.status,
+                message: message
             };
         }
         const data = await response.json()
@@ -27,11 +34,19 @@ export const API = {
         const response = await fetch(`${APIBase}/api/url?${params}`, {
             method: 'POST'
         })
-        if (response.status != 201)
+        if (response.status != 201){
+            let message:string="";
+            try{
+                let data=await response.json()
+                message=data.message
+            }
+            catch{}
             return {
                 type: "error",
-                body: response.status
+                code: response.status,
+                message:message
             };
+        }
         const data=await response.json()
         return{
             type:"urls",

@@ -22,7 +22,7 @@ export const RedirectionPage=()=>{
             }
             if(data.type==="error")
             {
-                if(data.body===404)
+                if(data.code===404)
                     setError("Sorry,the link you put in doenst exist")
             }
         }

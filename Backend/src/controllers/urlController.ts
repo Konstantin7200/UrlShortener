@@ -15,6 +15,25 @@ const encodeUrl = async(baseUrl: string) => {
         }
     }
 }
+const isValidLink=(link:string)=>{
+  let result;
+  let httpRegex=new RegExp(/https?:\/{2}/g)
+  result=link.match(httpRegex)
+  if(!result||result.length!=1)
+    throw new Error("The link should contain only one http/https")
+  let httpStartingRegex=new RegExp(/^https?:\/{2}/g)
+  result=link.match(httpStartingRegex)
+  if(!result||result.length!=1)
+    throw new Error("The link should have http/https at the start")
+  let slashesRegex=new RegExp(/:\/{2}/g)
+  result=link.match(slashesRegex)
+  if(!result||result.length!=1)
+    throw new Error("The link should contain only one pair of slashes")
+  if(!link.includes(".")){
+    throw new Error("The link should include a dot")
+  }
+  return true;
+}
 const checkUrl=async(req: Request, res: Response) =>{
     const url = req.query.url;
     if (typeof url !== "string")
@@ -79,6 +98,15 @@ const createUrl = async(req: Request, res: Response) => {
             message: 'Bad request'
         });
     else {
+        try{
+            isValidLink(baseUrl)
+        }
+        catch(err:any){
+            return res.status(400).json({
+            status: 400,
+            message: err.message  
+        });
+        }
         const {shortUrl,statsUrl}=await encodeUrl(baseUrl)
         await urlRepository.createUrls(baseUrl, shortUrl, statsUrl);
         res.status(201).json({
