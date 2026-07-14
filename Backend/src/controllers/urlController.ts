@@ -59,7 +59,7 @@ const getStatistics = async(req: Request, res: Response) => {
     }
 }
 const createUrl = async(req: Request, res: Response) => {
-    const baseUrl = req.query.baseUrl;
+    const baseUrl = req.body.baseUrl;
     if (typeof baseUrl !== "string")
         res.status(400).json({
             status: 400,

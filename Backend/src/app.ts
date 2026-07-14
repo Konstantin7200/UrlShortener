@@ -9,6 +9,7 @@ const corsOptions={
 }
 
 app.use(cors(corsOptions))
+app.use(express.json())
 console.log("App started");
 
 export default app;

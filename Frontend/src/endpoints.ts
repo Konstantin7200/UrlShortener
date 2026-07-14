@@ -30,9 +30,10 @@ export const API = {
         }
     },
     async createNewUrl(baseUrl: string):Promise<errorResponse|urlResponse> {
-        const params = new URLSearchParams({ baseUrl: baseUrl })
-        const response = await fetch(`${APIBase}/api/url?${params}`, {
-            method: 'POST'
+        const response = await fetch(`${APIBase}/api/url`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ baseUrl })
         })
         if (response.status != 201){
             let message:string="";
