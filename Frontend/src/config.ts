@@ -1,3 +1,6 @@
+import { RequiredEnvVars } from "./envVars";
+
+
 function requireEnv(name: string): string {
   const value = import.meta.env[name];
   if (value === undefined) {
@@ -6,6 +9,6 @@ function requireEnv(name: string): string {
   return value;
 }
 
-export const EnvConfig = {
-  ApiUrl: requireEnv("VITE_API_URL"),
-} as const;
+export const EnvConfig =Object.fromEntries(
+  Object.entries(RequiredEnvVars).map(([key,value])=>[key,requireEnv(value)])
+) 
