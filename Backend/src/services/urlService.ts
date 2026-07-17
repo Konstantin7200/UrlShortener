@@ -23,6 +23,7 @@ const getShortUrlAndRecordVisit = async ({ shortUrl, ip, userAgent }: getShortUr
     }
     else {
         try {
+            ipToStore=ip
             region = await locationAPI.getLocation(ip)
         }
         catch (e) {

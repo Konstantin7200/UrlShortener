@@ -13,7 +13,6 @@ export const RedirectionPage=()=>{
         async function fetchData() {
             const data=await API.getUrlData(params.url!)
             if(data.type==="redirect"){
-                console.log(data.body)
                 window.location.replace(data.body);
             }
             if(data.type==="stats"){

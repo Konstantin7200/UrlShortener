@@ -12,7 +12,6 @@ export const HomePage = () => {
             setShortLink(data.body.shortUrl)
         }
         if(data.type==="error"){
-            console.log(data.message)
             setError(data.message)
         }
     }
