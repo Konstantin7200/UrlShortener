@@ -9,3 +9,4 @@ app.get("/", (req: Request, res: Response) => {
 app.get("/api/url",resolveUrl)
 
 app.post("/api/url", resolveUrlCreation)//createUrl
+

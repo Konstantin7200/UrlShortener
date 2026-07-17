@@ -6,24 +6,31 @@ import { addVisitor } from "../repositories/visitorRepository";
 import { encodeUrl, isValidLink } from "../utils/utils";
 
 type getShortUrlArgs = {
-    shortUrl: string, 
-    ip: string,
-    userAgent: string|undefined
+    shortUrl: string,
+    ip: string | undefined,
+    userAgent: string | undefined
 }
-const getShortUrlAndRecordVisit = async ({shortUrl, ip, userAgent}:getShortUrlArgs):Promise<string> => {
+const getShortUrlAndRecordVisit = async ({ shortUrl, ip, userAgent }: getShortUrlArgs): Promise<string> => {
     const { id, baseUrl } = await getBaseUrl(shortUrl);
     if (id === null) {
         throw Error("Url not found")
     }
     let region = ""
-    try {
-        region = await locationAPI.getLocation(ip)
+    let ipToStore=""
+    if (ip === undefined) {
+        region = "Unknown"
+        ipToStore = "Unknown"
     }
-    catch (e) {
-        throw Error("External API error")
+    else {
+        try {
+            region = await locationAPI.getLocation(ip)
+        }
+        catch (e) {
+            throw Error("External API error")
+        }
     }
     const { browser, os, version } = systemSettingsAPI.getSystemSettings(userAgent)
-    await addVisitor({ urlId: id,ip, browser, browserVersion: version, os, region })
+    await addVisitor({ urlId: id, ip:ipToStore, browser, browserVersion: version, os, region })
     return baseUrl;
 }
 const getStatistics = async (statisticsUrl: string) => {
@@ -39,7 +46,7 @@ const createUrl = async (baseUrl: string) => {
             throw Error(err.message)
     }
     let shortUrl = "", statsUrl = ""
-    let tries=0;
+    let tries = 0;
     while (tries < 1000) {
         ({ shortUrl, statsUrl } = await encodeUrl(baseUrl))
         const isCollision = await checkCollision(shortUrl, statsUrl);
@@ -47,7 +54,7 @@ const createUrl = async (baseUrl: string) => {
             break;
         tries++;
     }
-    if(tries===1000){
+    if (tries === 1000) {
         throw Error("Url not created");
     }
     await createUrls(baseUrl, shortUrl, statsUrl);
@@ -67,23 +74,3 @@ const getUrlType = async (url: string): Promise<UrlTypeObject> => {
     throw new Error("Url not found")
 }
 export { getShortUrlAndRecordVisit, getStatistics, createUrl, getUrlType }
-/*const getBaseUrl = async (req: Request, res: Response, next: NextFunction) => {
-    const shortUrl = req.query.shortUrl;
-    if (typeof shortUrl !== "string")
-        res.status(400).json({
-            status: 400,
-            message: 'Bad request'
-        });
-    else {
-        const { id, baseUrl } = await urlRepository.getBaseUrl(shortUrl);
-        if (id != null) {
-            res.locals.urlId = id
-            res.locals.baseUrl = baseUrl
-            return next()
-        }
-        res.status(404).json({
-            status: 404,
-            message: 'Not found'
-        })
-    }
-}*/
