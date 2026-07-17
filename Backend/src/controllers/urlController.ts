@@ -1,93 +1,104 @@
 import { NextFunction, Request, Response } from "express";
-import { urlRepository } from "../repositories/urlRepository";
-import {encodeUrl,isValidLink} from "../utils/utils"
+import { encodeUrl, isValidLink } from "../utils/utils"
+import { createUrl, getShortUrlAndRecordVisit, getStatistics, getUrlType } from "../services/urlService";
 
-const checkUrl=async(req: Request, res: Response) =>{
+
+type UrlType = "Short" | "Statistics"
+export type UrlTypeObject = {
+    type: UrlType
+}
+
+const STATUS_CODES={
+    OK:200,
+    CREATED:201,
+    BAD_REQUEST:400,
+    NOT_FOUND:404,
+    INTERNAL_SERVER_ERROR:500
+} as const
+
+const resolveUrl = async (req: Request, res: Response) => {
     const url = req.query.url;
     if (typeof url !== "string")
-        res.status(400).json({
-            status: 400,
-            message: 'Bad request'
-        });
-    else{
-        if(await urlRepository.checkShort(url))
-        {
-            req.query.shortUrl=url
-            return res.redirect(301,`/api/url/short?shortUrl=${url}`)
-        }
-        if(await urlRepository.checkStatistics(url))
-        {
-            req.query.statisticsUrl=url
-            return res.redirect(301,`/api/url/statistics?statisticsUrl=${url}`)
-        }
-        res.status(404).json({
-            status: 404,
-            message: 'Not found'
-        });
-    }
-}
-const getBaseUrl = async (req: Request, res: Response, next: NextFunction) => {
-    const shortUrl = req.query.shortUrl;
-    if (typeof shortUrl !== "string")
-        res.status(400).json({
-            status: 400,
+        res.status(STATUS_CODES.BAD_REQUEST).json({
+            status: STATUS_CODES.BAD_REQUEST,
             message: 'Bad request'
         });
     else {
-        const { id, baseUrl } = await urlRepository.getBaseUrl(shortUrl);
-        if (id != null) {
-            res.locals.urlId = id
-            res.locals.baseUrl = baseUrl
-            return next()
+        let urlType: UrlType | null = null
+        try {
+            ({ type: urlType } = await getUrlType(url))
         }
-        res.status(404).json({
-            status: 404,
-            message: 'Not found'
-        })
-    }
-}
-const getStatistics = async(req: Request, res: Response) => {
-    const statisticsUrl = req.query.statisticsUrl;
-    if (typeof statisticsUrl !== "string")
-        res.status(400).json({
-            status: 400,
-            message: 'Bad request'
-        });
-    else {
-        const result=await urlRepository.getStats(statisticsUrl);
-        res.status(200).json(result)
-    }
-}
-const createUrl = async(req: Request, res: Response) => {
-    const baseUrl = req.body.baseUrl;
-    if (typeof baseUrl !== "string")
-        res.status(400).json({
-            status: 400,
-            message: 'Bad request'
-        });
-    else {
-        try{
-            isValidLink(baseUrl)
+        catch (err) {
+            if (err instanceof Error)
+                return res.status(STATUS_CODES.NOT_FOUND).json({
+                    status: STATUS_CODES.NOT_FOUND,
+                    message: 'Not found'
+                });
+            return;
         }
-        catch(err:any){
-            return res.status(400).json({
-            status: 400,
-            message: err.message  
-        });
+        if (urlType === "Short") {
+            try {
+                const result = await getShortUrlAndRecordVisit({ shortUrl: url, ip: req.ip || "", userAgent: req.headers["user-agent"] });
+                res.status(STATUS_CODES.OK).json({
+                    baseUrl: result
+                })
+            }
+            catch (err) {
+                if (err instanceof Error) {
+                    if (err.message === "Url not found")
+                        return res.status(STATUS_CODES.NOT_FOUND).json({
+                            status: STATUS_CODES.NOT_FOUND,
+                            message: 'Url not found'
+                        });
+                    else {
+                        return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json(
+                            {
+                                status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+                                message: 'Internal server error'
+                            }
+                        )
+                    }
+                }
+            }
         }
-        let shortUrl="",statsUrl=""
-        while(true){
-        ({shortUrl,statsUrl}=await encodeUrl(baseUrl))
-        const isCollision=await urlRepository.checkCollision(shortUrl,statsUrl);
-        if(!isCollision)
-            break;
+        else {
+            const result = await getStatistics(url);
+            res.status(STATUS_CODES.OK).json(result)
         }
-        await urlRepository.createUrls(baseUrl, shortUrl, statsUrl);
-        res.status(201).json({
-            shortUrl: shortUrl,
-            statisticsUrl: statsUrl
-        })
     }
 }
 
-export { getBaseUrl, getStatistics, createUrl,checkUrl }
+const resolveUrlCreation = async (req: Request, res: Response) => {
+    const baseUrl = req.body.baseUrl;
+    if (typeof baseUrl !== "string")
+        res.status(STATUS_CODES.BAD_REQUEST).json({
+            status: STATUS_CODES.BAD_REQUEST,
+            message: 'Bad request'
+        });
+    else {
+        try {
+            const { shortUrl, statsUrl } = await createUrl(baseUrl)
+            res.status(STATUS_CODES.CREATED).json({
+                shortUrl: shortUrl,
+                statisticsUrl: statsUrl
+            })
+        }
+        catch (err) {
+            if (err instanceof Error) {
+                if (err.message === "Url not found")
+                    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json(
+                        {
+                            status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+                            message: 'Internal server error'
+                        }
+                    )
+                else res.status(STATUS_CODES.BAD_REQUEST).json({
+                    status: STATUS_CODES.BAD_REQUEST,
+                    message: err.message
+                });
+            }
+        }
+    }
+}
+
+export { resolveUrl, resolveUrlCreation }
