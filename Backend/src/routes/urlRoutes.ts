@@ -1,12 +1,11 @@
 import app from "../app";
-import { Request, Response,Router } from "express";
-import {  resolveUrl, resolveUrlCreation } from "../controllers/urlController";
+import { Request, Response, Router } from "express";
+import { resolveUrl, resolveUrlCreation } from "../controllers/urlController";
 
+const router = Router();
 
-const router=Router()
+router.get("", resolveUrl);
 
-router.get("",resolveUrl)
+router.post("", resolveUrlCreation);
 
-router.post("", resolveUrlCreation)
-
-export default router
+export default router;

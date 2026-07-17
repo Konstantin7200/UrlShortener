@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "test": "vitest"
+    "test": "vitest",
+    "format": "prettier --write \"src/**/*.{js,ts,jsx,tsx,json}\"",
+    "format:check": "prettier --check \"src/**/*.{js,ts,jsx,tsx,json}\""
   },
   "keywords": [],
   "author": "",
@@ -25,6 +27,7 @@
     "@types/node": "^26.1.0",
     "@types/pg": "^8.20.0",
     "nodemon": "^3.1.14",
+    "prettier": "^3.9.5",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"

@@ -1,12 +1,12 @@
-import { Pool } from "pg"
-import { EnvConfig } from "../config"
+import { Pool } from "pg";
+import { EnvConfig } from "../config";
 
 const pool = new Pool({
-    user: EnvConfig.PgUser,
-    password: EnvConfig.PgPassword,
-    host: EnvConfig.PgHost,
-    port: parseInt(EnvConfig.PgPort),
-    database: EnvConfig.PgDatabase,
-})
+  user: EnvConfig.PgUser,
+  password: EnvConfig.PgPassword,
+  host: EnvConfig.PgHost,
+  port: parseInt(EnvConfig.PgPort),
+  database: EnvConfig.PgDatabase,
+});
 
-export default pool
+export default pool;
