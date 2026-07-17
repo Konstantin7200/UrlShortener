@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { encodeUrl, isValidLink } from "../utils/utils";
 import {
   createUrl,
   getShortUrlAndRecordVisit,
@@ -21,7 +20,7 @@ export const StatusCodes = {
   INTERNAL_SERVER_ERROR: 500,
 } as const;
 
-const resolveUrl = async (req: Request, res: Response) => {
+const resolveUrl = async (req: Request, res: Response,next:NextFunction) => {
   const url = req.query.url;
   if (typeof url !== "string")
     res.status(StatusCodes.BAD_REQUEST).json({
@@ -35,7 +34,7 @@ const resolveUrl = async (req: Request, res: Response) => {
     } catch (err) {
       if (err instanceof Error) {
         const error: CustomError = { ...err, status: StatusCodes.NOT_FOUND };
-        throw error;
+        next(error);
       }
       return;
     }
@@ -56,13 +55,13 @@ const resolveUrl = async (req: Request, res: Response) => {
               ...err,
               status: StatusCodes.NOT_FOUND,
             };
-            throw error;
+            next(error);
           } else {
             const error: CustomError = {
               ...err,
               status: StatusCodes.INTERNAL_SERVER_ERROR,
             };
-            throw error;
+            next(error);
           }
         }
       }
@@ -73,7 +72,7 @@ const resolveUrl = async (req: Request, res: Response) => {
   }
 };
 
-const resolveUrlCreation = async (req: Request, res: Response) => {
+const resolveUrlCreation = async (req: Request, res: Response,next:NextFunction) => {
   const baseUrl = req.body.baseUrl;
   if (typeof baseUrl !== "string")
     res.status(StatusCodes.BAD_REQUEST).json({
@@ -94,7 +93,7 @@ const resolveUrlCreation = async (req: Request, res: Response) => {
             ...err,
             status: StatusCodes.INTERNAL_SERVER_ERROR,
           };
-          throw error;
+          next(error);
         } else
           res.status(StatusCodes.BAD_REQUEST).json({
             status: StatusCodes.BAD_REQUEST,
