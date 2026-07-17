@@ -1,6 +1,7 @@
+import { EnvConfig } from "./config";
 import type { errorResponse, redirectResponse, statsResponse, urlResponse } from "./types";
 
-const APIBase = import.meta.env.VITE_API_URL||""
+const APIBase = EnvConfig.ApiUrl
 export const API = {
     async getUrlData(url: string): Promise<statsResponse | redirectResponse | errorResponse> {
         const params = new URLSearchParams({ url: url })

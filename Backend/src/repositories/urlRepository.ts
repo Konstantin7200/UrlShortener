@@ -14,7 +14,7 @@ export const urlRepository={
             const {id,baseUrl}=response.rows[0]
             return {id,baseUrl}
         }
-        return {id:-1,baseUrl:""}
+        return {id:null,baseUrl:""}
     },
     getStats:async(statsUrl:string)=>{
         const response=await pool.query(`SELECT "visitingDate",ip,browser,"browserVersion",region,os FROM "Visitors" INNER JOIN "Urls" ON "Urls".id="Visitors"."urlId" WHERE "statisticsUrl"=$1`,[statsUrl])

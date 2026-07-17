@@ -1,15 +1,17 @@
 import express, { Express } from 'express';
-const cors=require('cors')
+import cors, { CorsOptions } from 'cors';
+import { EnvConfig } from './config';
 
 const app: Express = express();
 
-const corsOptions={
-    origin:[process.env.FRONTEND_URL],
+const corsOptions:CorsOptions={
+    origin:[EnvConfig.FrontendUrl],
     methods: ['GET', 'POST']
 }
 
 app.use(cors(corsOptions))
 app.use(express.json())
 console.log("App started");
+app.listen(3000)
 
 export default app;

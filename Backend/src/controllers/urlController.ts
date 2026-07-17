@@ -35,7 +35,7 @@ const getBaseUrl = async (req: Request, res: Response, next: NextFunction) => {
         });
     else {
         const { id, baseUrl } = await urlRepository.getBaseUrl(shortUrl);
-        if (id != -1) {
+        if (id != null) {
             res.locals.urlId = id
             res.locals.baseUrl = baseUrl
             return next()
