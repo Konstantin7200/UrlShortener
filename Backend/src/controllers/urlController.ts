@@ -20,7 +20,7 @@ export const StatusCodes = {
   INTERNAL_SERVER_ERROR: 500,
 } as const;
 
-const resolveUrl = async (req: Request, res: Response,next:NextFunction) => {
+const resolveUrl = async (req: Request, res: Response, next: NextFunction) => {
   const url = req.query.url;
   if (typeof url !== "string")
     res.status(StatusCodes.BAD_REQUEST).json({
@@ -33,7 +33,9 @@ const resolveUrl = async (req: Request, res: Response,next:NextFunction) => {
       ({ type: urlType } = await getUrlType(url));
     } catch (err) {
       if (err instanceof Error) {
-        const error: CustomError = { ...err, status: StatusCodes.NOT_FOUND };
+        const error: CustomError = Object.assign(err, {
+          status: StatusCodes.NOT_FOUND,
+        });
         next(error);
       }
       return;
@@ -51,16 +53,14 @@ const resolveUrl = async (req: Request, res: Response,next:NextFunction) => {
       } catch (err) {
         if (err instanceof Error) {
           if (err.message === "Url not found") {
-            const error: CustomError = {
-              ...err,
+            const error: CustomError = Object.assign(err, {
               status: StatusCodes.NOT_FOUND,
-            };
+            });
             next(error);
           } else {
-            const error: CustomError = {
-              ...err,
-              status: StatusCodes.INTERNAL_SERVER_ERROR,
-            };
+            const error: CustomError = Object.assign(err, {
+              status: StatusCodes.NOT_FOUND,
+            });
             next(error);
           }
         }
@@ -72,7 +72,11 @@ const resolveUrl = async (req: Request, res: Response,next:NextFunction) => {
   }
 };
 
-const resolveUrlCreation = async (req: Request, res: Response,next:NextFunction) => {
+const resolveUrlCreation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const baseUrl = req.body.baseUrl;
   if (typeof baseUrl !== "string")
     res.status(StatusCodes.BAD_REQUEST).json({
