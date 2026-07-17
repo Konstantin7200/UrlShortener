@@ -1,6 +1,5 @@
 import { locationAPI } from "../api/locationApi";
 import { systemSettingsAPI } from "../api/systemSettingsApi";
-import { UrlTypeObject } from "../controllers/urlController";
 import {
   checkCollision,
   checkShort,
@@ -11,6 +10,9 @@ import {
 } from "../repositories/urlRepository";
 import { addVisitor } from "../repositories/visitorRepository";
 import { encodeUrl, isValidLink } from "../utils/utils";
+
+type UrlType = "Short" | "Statistics";
+type UrlTypeObject = { type: UrlType };
 
 type getShortUrlArgs = {
   shortUrl: string;
@@ -90,3 +92,4 @@ const getUrlType = async (url: string): Promise<UrlTypeObject> => {
   throw new Error("Url not found");
 };
 export { getShortUrlAndRecordVisit, getStatistics, createUrl, getUrlType };
+export type { UrlTypeObject, UrlType };

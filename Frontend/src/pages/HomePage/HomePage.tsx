@@ -36,8 +36,8 @@ export const HomePage = () => {
         <button
           className={
             input.trim() !== ""
-              ? `p-4 bg-gray-600 cursor-pointer duration-300 hover:bg-black rounded-3xl text-white text-2xl`
-              : `p-4 bg-gray-300 cursor-pointer duration-300 rounded-3xl text-white text-2xl`
+              ? "p-4 bg-gray-600 cursor-pointer duration-300 hover:bg-black rounded-3xl text-white text-2xl"
+              : "p-4 bg-gray-300 cursor-pointer duration-300 rounded-3xl text-white text-2xl"
           }
           onClick={handleClick}
           disabled={input.trim().length === 0}

@@ -5,12 +5,8 @@ import {
   getStatistics,
   getUrlType,
 } from "../services/urlService";
+import type { UrlType, UrlTypeObject } from "../services/urlService";
 import { CustomError } from "../middleware/errorHandlingMiddleware";
-
-type UrlType = "Short" | "Statistics";
-export type UrlTypeObject = {
-  type: UrlType;
-};
 
 export const StatusCodes = {
   OK: 200,
