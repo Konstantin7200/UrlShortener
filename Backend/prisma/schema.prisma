@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Urls {
+  id            Int       @id @default(autoincrement())
+  baseUrl       String
+  shortUrl      String    @unique
+  statisticsUrl String    @unique
+  visitors      Visitors[]
+}
+
+model Visitors {
+  id             Int      @id @default(autoincrement())
+  urlId          Int
+  visitingDate   DateTime @default(now())
+  ip             String
+  browser        String
+  browserVersion String
+  region         String
+  os             String
+  url            Urls     @relation(fields: [urlId], references: [id], onDelete: Cascade)
+}
+

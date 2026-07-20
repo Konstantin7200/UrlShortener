@@ -1,4 +1,4 @@
-import pool from "../db";
+import { prisma } from "../db/prisma";
 
 type VisitorToAdd = {
   urlId: number;
@@ -17,9 +17,16 @@ const addVisitor = async ({
   os,
   region,
 }: VisitorToAdd) => {
-  await pool.query(
-    `INSERT INTO "Visitors" ("urlId",ip,browser,"browserVersion",os,region) VALUES($1,$2,$3,$4,$5,$6)`,
-    [urlId, ip, browser, browserVersion, os, region],
-  );
+  await prisma.visitors.create({
+    data: {
+      urlId,
+      ip,
+      browser,
+      browserVersion,
+      os,
+      region,
+    },
+  });
 };
+
 export { addVisitor };
