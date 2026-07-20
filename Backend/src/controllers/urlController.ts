@@ -5,8 +5,7 @@ import {
   getStatistics,
   getUrlType,
 } from "../services/urlService";
-import type { UrlType, UrlTypeObject } from "../services/urlService";
-import { CustomError } from "../middleware/errorHandlingMiddleware";
+import type { UrlType } from "../services/urlService";
 
 export const StatusCodes = {
   OK: 200,
@@ -29,10 +28,10 @@ const resolveUrl = async (req: Request, res: Response, next: NextFunction) => {
       ({ type: urlType } = await getUrlType(url));
     } catch (err) {
       if (err instanceof Error) {
-        const error: CustomError = Object.assign(err, {
+        res.status(StatusCodes.NOT_FOUND).json({
           status: StatusCodes.NOT_FOUND,
+          message: err.message,
         });
-        next(error);
       }
       return;
     }
@@ -49,15 +48,15 @@ const resolveUrl = async (req: Request, res: Response, next: NextFunction) => {
       } catch (err) {
         if (err instanceof Error) {
           if (err.message === "Url not found") {
-            const error: CustomError = Object.assign(err, {
+            res.status(StatusCodes.NOT_FOUND).json({
               status: StatusCodes.NOT_FOUND,
+              message: err.message,
             });
-            next(error);
           } else {
-            const error: CustomError = Object.assign(err, {
-              status: StatusCodes.NOT_FOUND,
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+              status: StatusCodes.INTERNAL_SERVER_ERROR,
+              message: err.message,
             });
-            next(error);
           }
         }
       }
@@ -89,11 +88,10 @@ const resolveUrlCreation = async (
     } catch (err) {
       if (err instanceof Error) {
         if (err.message === "Url not found") {
-          const error: CustomError = {
-            ...err,
-            status: StatusCodes.INTERNAL_SERVER_ERROR,
-          };
-          next(error);
+          res.status(StatusCodes.NOT_FOUND).json({
+            status: StatusCodes.NOT_FOUND,
+            message: err.message,
+          });
         } else
           res.status(StatusCodes.BAD_REQUEST).json({
             status: StatusCodes.BAD_REQUEST,
