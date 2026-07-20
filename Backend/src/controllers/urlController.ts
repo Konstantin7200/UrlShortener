@@ -93,12 +93,12 @@ const resolveUrlCreation = async (
             message: err.message,
           });
         }
-        if(err.message==="Url not created")
+        if (err.message === "Url not created")
           res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: StatusCodes.INTERNAL_SERVER_ERROR,
             message: err.message,
           });
-           else
+        else
           res.status(StatusCodes.BAD_REQUEST).json({
             status: StatusCodes.BAD_REQUEST,
             message: err.message,

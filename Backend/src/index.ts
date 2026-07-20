@@ -1,5 +1,5 @@
 import "dotenv/config";
 import app from "./app";
-import { EnvConfig } from "./config";
+import { EnvConfig } from "./EnvConfig";
 
 app.listen(EnvConfig.Port);

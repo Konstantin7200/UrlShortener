@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { EnvConfig } from "../config";
+import { EnvConfig } from "../EnvConfig";
 
 const pool = new Pool({
   user: EnvConfig.PgUser,

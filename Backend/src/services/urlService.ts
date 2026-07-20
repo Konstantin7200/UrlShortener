@@ -10,6 +10,7 @@ import {
 } from "../repositories/urlRepository";
 import { addVisitor } from "../repositories/visitorRepository";
 import { encodeUrl, isValidLink } from "../utils/utils";
+import { logger } from "../PinoConfig";
 
 type UrlType = "Short" | "Statistics";
 type UrlTypeObject = { type: UrlType };
@@ -31,12 +32,15 @@ const getShortUrlAndRecordVisit = async ({
   let region = "";
   let ipToStore = "";
   if (ip === undefined) {
+    logger.warn({ shortUrl }, "ip is undefined");
     region = "Unknown";
     ipToStore = "Unknown";
   } else {
     try {
       ipToStore = ip;
       region = await locationAPI.getLocation(ip);
+      if (region === "Unknown")
+        logger.warn({ shortUrl, ip }, "Region not determined");
     } catch (e) {
       throw Error("External API error");
     }
@@ -73,8 +77,10 @@ const createUrl = async (baseUrl: string) => {
     tries++;
   }
   if (tries === 1000) {
+    logger.error("The tries limit on url creation was reached");
     throw Error("Url not created");
   }
+  if (tries > 0) logger.info(`${tries} tries were spent to create urls`);
   await createUrls(baseUrl, shortUrl, statsUrl);
   return { shortUrl, statsUrl };
 };
