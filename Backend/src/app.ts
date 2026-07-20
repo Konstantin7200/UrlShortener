@@ -3,16 +3,9 @@ import cors, { CorsOptions } from "cors";
 import { EnvConfig } from "./EnvConfig";
 import { globalErrorHandlingMiddleware } from "./middleware/errorHandlingMiddleware";
 import { registerRoutes } from "./routes";
-import { pinoHttp } from "pino-http";
-import { autoLoggingRulesFunction, logger } from "./PinoConfig";
+import { httpLogger } from "./PinoConfig";
 
 const app: Express = express();
-const httpLogger = pinoHttp({
-  logger: logger,
-  autoLogging: {
-    ignore: autoLoggingRulesFunction,
-  },
-});
 
 const corsOptions: CorsOptions = {
   origin: [EnvConfig.FrontendUrl],

@@ -14,4 +14,5 @@ export const EnvConfig = {
   PgDatabase: requireEnv("PGDATABASE"),
   FrontendUrl: requireEnv("FRONTEND_URL"),
   Port: requireEnv("PORT"),
+  LogsPath: requireEnv("LOGSPATH"),
 } as const;
