@@ -1,0 +1,246 @@
+openapi: 3.1.0
+info:
+  title: URL Shortener API
+  version: 1.0.0
+  description: Shortens long URLs and provides visit statistics.
+
+paths:
+  /:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Server is running
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+
+  /api/url:
+    get:
+      summary: Resolve a short URL or get visit statistics
+      operationId: resolveUrl
+      parameters:
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The short code or statistics code to look up
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      baseUrl:
+                        type: string
+                        format: uri
+                        description: The original long URL
+                    required:
+                      - baseUrl
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/VisitorRecord"
+        "400":
+          description: url query parameter is missing or not a string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+              example:
+                status: 400
+                message: Bad request
+        "404":
+          description: The provided code was not found in the database
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+              example:
+                status: 404
+                message: Url not found
+        "500":
+          description: Error resolving the short URL (e.g. external IP API failure)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+              example:
+                status: 500
+                message: External API error
+
+    post:
+      summary: Create a shortened URL
+      operationId: createShortUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                baseUrl:
+                  type: string
+                  format: uri
+                  description: The original URL to shorten
+              required:
+                - baseUrl
+            example:
+              baseUrl: https://example.com/very-long-url
+      responses:
+        "201":
+          description: Short URL created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shortUrl:
+                    type: string
+                    description: The generated short code
+                  statisticsUrl:
+                    type: string
+                    description: The code to retrieve visit statistics
+                required:
+                  - shortUrl
+                  - statisticsUrl
+        "400":
+          description: |
+            Bad request. Possible reasons:
+            - baseUrl missing or not a string
+            - The link should have http/https at the start
+            - The link should contain only one pair of slashes
+            - The link should include a dot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+              examples:
+                missingField:
+                  summary: baseUrl is missing or not a string
+                  value:
+                    status: 400
+                    message: Bad request
+                invalidProtocol:
+                  summary: Link must start with http/https
+                  value:
+                    status: 400
+                    message: The link should have http/https at the start
+                multipleSlashes:
+                  summary: Link contains multiple pairs of slashes
+                  value:
+                    status: 400
+                    message: The link should contain only one pair of slashes
+                noDot:
+                  summary: Link does not contain a dot
+                  value:
+                    status: 400
+                    message: The link should include a dot
+        "404":
+          description: The short code was not found in the database
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+              example:
+                status: 404
+                message: Url not found
+        "500":
+          description: |
+            Internal server error. Possible reason:
+            - Url not created (collision retries exhausted)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+              examples:
+                collision:
+                  summary: Could not generate unique URL after 1000 attempts
+                  value:
+                    status: 500
+                    message: Url not created
+                generic:
+                  summary: Unexpected server error
+                  value:
+                    status: 500
+                    message: Internal server error
+
+components:
+  schemas:
+    VisitorRecord:
+      type: object
+      properties:
+        visitingDate:
+          type: string
+          format: date-time
+          description: Timestamp of the visit
+        ip:
+          type: string
+          description: Visitor's IP address
+        browser:
+          type: string
+          description: Browser name
+        browserVersion:
+          type: string
+          description: Browser version
+        region:
+          type: string
+          description: Geographic region (Country,City)
+        os:
+          type: string
+          description: Operating system name
+      required:
+        - visitingDate
+        - ip
+        - browser
+        - browserVersion
+        - region
+        - os
+
+    ApiError:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+      required:
+        - status
+        - message
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+          example:
+            status: 400
+            message: Bad request
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+          example:
+            status: 404
+            message: Url not found
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+          example:
+            status: 500
+            message: External API error
