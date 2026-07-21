@@ -1,3 +1,4 @@
+import { IncomingMessage } from "http";
 import pino from "pino";
 import { pinoHttp } from "pino-http";
 import { EnvConfig } from "./EnvConfig";
@@ -14,8 +15,8 @@ const logger = pino(
 );
 
 //true->no log
-const autoLoggingRulesFunction = (req: Request): boolean => {
-  if (req.url.trim() === "/") return true;
+const autoLoggingRulesFunction = (req: IncomingMessage): boolean => {
+  if (req.url?.trim() === "/") return true;
   return false;
 };
 const httpLogger = pinoHttp({

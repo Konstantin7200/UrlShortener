@@ -1,13 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { createUrl, handleUrl } from "../services/urlService";
-
-export const StatusCodes = {
-  OK: 200,
-  CREATED: 201,
-  BAD_REQUEST: 400,
-  NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500,
-} as const;
+import {
+  AppError,
+  createUrl,
+  handleUrl,
+  StatusCodes,
+} from "../services/urlService";
 
 const resolveUrl = async (req: Request, res: Response, next: NextFunction) => {
   const url = req.query.url;
@@ -28,22 +25,23 @@ const resolveUrl = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(StatusCodes.OK).json(result.statistics);
     }
   } catch (err) {
-    if (err instanceof Error) {
-      if (err.message === "Url not found") {
+    if (err instanceof AppError) {
+      if (err.statusCode === StatusCodes.NOT_FOUND) {
         return res.status(StatusCodes.NOT_FOUND).json({
           status: StatusCodes.NOT_FOUND,
-          message: err.message,
+          message: "Not found",
         });
       }
     }
+    return next(err);
   }
-  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    status: StatusCodes.INTERNAL_SERVER_ERROR,
-    message: "Internal server error",
-  });
 };
 
-const resolveUrlCreation = async (req: Request, res: Response) => {
+const resolveUrlCreation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const baseUrl = req.body.baseUrl;
   if (typeof baseUrl !== "string")
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -58,8 +56,8 @@ const resolveUrlCreation = async (req: Request, res: Response) => {
         statisticsUrl: statsUrl,
       });
     } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === "Url not created")
+      if (err instanceof AppError) {
+        if (err.statusCode === StatusCodes.INTERNAL_SERVER_ERROR)
           return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: StatusCodes.INTERNAL_SERVER_ERROR,
             message: "Internal server error",
@@ -70,11 +68,8 @@ const resolveUrlCreation = async (req: Request, res: Response) => {
             message: err.message,
           });
       }
+      return next(err);
     }
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      status: StatusCodes.INTERNAL_SERVER_ERROR,
-      message: "Internal server error",
-    });
   }
 };
 

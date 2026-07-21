@@ -15,5 +15,5 @@ export const EnvConfig = {
   FrontendUrl: requireEnv("FRONTEND_URL"),
   Port: requireEnv("PORT"),
   LogsPath: requireEnv("LOGSPATH"),
-  DatabaseUrl:requireEnv("DATABASE_URL")
+  DatabaseUrl: requireEnv("DATABASE_URL"),
 } as const;

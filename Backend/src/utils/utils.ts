@@ -5,10 +5,10 @@ import { RAND_HASH_ADDITION } from "src/constants";
 export const encodeUrl = async (baseUrl: string) => {
   const hashed = BigInt(
     "0x" +
-      hash("sha256", baseUrl + Date.now() + randomInt(RAND_HASH_ADDITION)).substring(
-        0,
-        12,
-      ),
+      hash(
+        "sha256",
+        baseUrl + Date.now() + randomInt(RAND_HASH_ADDITION),
+      ).substring(0, 12),
   );
   const base62 = new Base62();
   const shortUrl = base62.encodeBigInt(hashed);

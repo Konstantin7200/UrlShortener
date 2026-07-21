@@ -6,10 +6,9 @@ import { securityHeaders } from "./middleware/securityHeaders";
 
 const app: Express = express();
 
-
 app.use(securityHeaders);
 app.use(express.json());
-app.use(httpLogger as unknown as express.RequestHandler);
+app.use(httpLogger);
 registerRoutes(app);
 app.use(globalErrorHandlingMiddleware);
 

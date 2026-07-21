@@ -15,7 +15,6 @@ import { GEO_UNKNOWN, MAX_URL_CREATION_ATTEMPTS } from "src/constants";
 
 type UrlType = "Short" | "Statistics";
 type UrlTypeObject = { type: UrlType };
-
 type getShortUrlArgs = {
   shortUrl: string;
   ip: string | undefined;
@@ -40,6 +39,22 @@ type handleUrlResponseType = Promise<
       }[];
     }
 >;
+class AppError extends Error {
+  constructor(
+    message: string,
+    public statusCode: (typeof StatusCodes)[keyof typeof StatusCodes],
+  ) {
+    super(message);
+  }
+}
+const StatusCodes = {
+  OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+} as const;
+
 const getShortUrlAndRecordVisit = async ({
   shortUrl,
   ip,
@@ -47,7 +62,7 @@ const getShortUrlAndRecordVisit = async ({
 }: getShortUrlArgs): Promise<string> => {
   const { id, baseUrl } = await getBaseUrl(shortUrl);
   if (id === null) {
-    throw Error("Url not found");
+    throw new AppError("Url not found", StatusCodes.NOT_FOUND);
   }
   let region = "";
   let ipToStore = "";
@@ -57,9 +72,14 @@ const getShortUrlAndRecordVisit = async ({
     ipToStore = GEO_UNKNOWN;
   } else {
     ipToStore = ip;
-    region = await getLocation(ip);
-    if (region === GEO_UNKNOWN)
-      logger.warn({ shortUrl, ip }, "Region not determined");
+    try {
+      region = await getLocation(ip);
+      if (region === GEO_UNKNOWN)
+        logger.warn({ shortUrl, ip }, "Region not determined");
+    } catch (err) {
+      if (err instanceof Error) logger.error(err.message);
+      region = GEO_UNKNOWN;
+    }
   }
   const { browser, os, version } = getSystemSettings(userAgent);
   await addVisitor({
@@ -80,7 +100,9 @@ const createUrl = async (baseUrl: string) => {
   try {
     isValidLink(baseUrl);
   } catch (err) {
-    if (err instanceof Error) throw Error(err.message);
+    if (err instanceof Error) {
+      throw new AppError(err.message, StatusCodes.BAD_REQUEST);
+    }
   }
   let shortUrl = "",
     statsUrl = "";
@@ -93,7 +115,7 @@ const createUrl = async (baseUrl: string) => {
   }
   if (tries === MAX_URL_CREATION_ATTEMPTS) {
     logger.error("The tries limit on url creation was reached");
-    throw Error("Url not created");
+    throw new AppError("Url not created", StatusCodes.INTERNAL_SERVER_ERROR);
   }
   if (tries > 0) logger.info(`${tries} tries were spent to create urls`);
   await createUrls(baseUrl, shortUrl, statsUrl);
@@ -110,14 +132,14 @@ const getUrlType = async (url: string): Promise<UrlTypeObject> => {
       type: "Statistics",
     };
   }
-  throw new Error("Url not found");
+  throw new AppError("Url not found", StatusCodes.NOT_FOUND);
 };
 const handleUrl = async ({
   url,
   userAgent,
   ip,
 }: handleUrlArgs): handleUrlResponseType => {
-  const { type: urlType } = await getUrlType(url)
+  const { type: urlType } = await getUrlType(url);
   if (urlType === "Short") {
     const baseUrl = await getShortUrlAndRecordVisit({
       shortUrl: url,
@@ -142,5 +164,7 @@ export {
   createUrl,
   getUrlType,
   handleUrl,
+  AppError,
+  StatusCodes,
 };
 export type { UrlTypeObject, UrlType };

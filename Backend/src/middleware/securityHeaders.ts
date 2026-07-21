@@ -5,6 +5,6 @@ const corsOptions: CorsOptions = {
   origin: [EnvConfig.FrontendUrl],
   methods: ["GET", "POST"],
 };
-const securityHeaders=cors(corsOptions)
+const securityHeaders = cors(corsOptions);
 
-export {securityHeaders}
+export { securityHeaders };
