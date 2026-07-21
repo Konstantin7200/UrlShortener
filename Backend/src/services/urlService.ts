@@ -1,5 +1,5 @@
-import { locationAPI } from "../api/locationApi";
-import { systemSettingsAPI } from "../api/systemSettingsApi";
+import { getLocation } from "../api/locationApi";
+import { getSystemSettings } from "../api/systemSettingsApi";
 import {
   checkCollision,
   checkShort,
@@ -56,12 +56,11 @@ const getShortUrlAndRecordVisit = async ({
     ipToStore = "Unknown";
   } else {
     ipToStore = ip;
-    region = await locationAPI.getLocation(ip);
+    region = await getLocation(ip);
     if (region === "Unknown")
       logger.warn({ shortUrl, ip }, "Region not determined");
   }
-  const { browser, os, version } =
-    systemSettingsAPI.getSystemSettings(userAgent);
+  const { browser, os, version } = getSystemSettings(userAgent);
   await addVisitor({
     urlId: id,
     ip: ipToStore,
