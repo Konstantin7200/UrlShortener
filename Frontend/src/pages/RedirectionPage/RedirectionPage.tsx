@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { API } from "../../endpoints";
@@ -20,7 +21,7 @@ export const RedirectionPage = () => {
         navigate("/stats");
       }
       if (data.type === "error") {
-        if (data.code === 404)
+        if (data.code === StatusCodes.NOT_FOUND)
           setError("Sorry,the link you put in doenst exist");
       }
     }

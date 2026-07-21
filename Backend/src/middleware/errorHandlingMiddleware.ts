@@ -1,6 +1,6 @@
 import { NextFunction, Response, Request } from "express";
 import { logger } from "../PinoConfig";
-import { StatusCodes } from "src/services/urlService";
+import { StatusCodes } from "http-status-codes";
 
 export const globalErrorHandlingMiddleware = (
   err: Error,

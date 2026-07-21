@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import { EnvConfig } from "./config";
 import type {
   errorResponse,
@@ -13,7 +14,7 @@ export const API = {
   ): Promise<statsResponse | redirectResponse | errorResponse> {
     const params = new URLSearchParams({ url: url });
     const response = await fetch(`${APIBase}/api/url?${params}`);
-    if (response.status != 200) {
+    if (response.status != StatusCodes.OK) {
       let message: string = "";
       try {
         let data = await response.json();
@@ -42,7 +43,7 @@ export const API = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ baseUrl }),
     });
-    if (response.status != 201) {
+    if (response.status != StatusCodes.CREATED) {
       let message: string = "";
       try {
         let data = await response.json();
