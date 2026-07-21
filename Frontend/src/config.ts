@@ -11,4 +11,4 @@ function requireEnv(name: string): string {
 
 export const EnvConfig =Object.fromEntries(
   Object.entries(RequiredEnvVars).map(([key,value])=>[key,requireEnv(value)])
-) 
+) as Record<keyof typeof RequiredEnvVars,string>

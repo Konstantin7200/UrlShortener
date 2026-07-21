@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { API } from "../../endpoints";
-import { useDispatch } from "react-redux";
 import { setStats } from "../../store/statsSlice";
+import { useAppDispatch } from "../../store/store";
 
 export const RedirectionPage = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const params = useParams();
   const [error, setError] = useState("");
   useEffect(() => {

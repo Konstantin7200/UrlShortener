@@ -1,5 +1,6 @@
 import { NextFunction, Response, Request } from "express";
 import { logger } from "../PinoConfig";
+import { StatusCodes } from "src/controllers/urlController";
 
 export const globalErrorHandlingMiddleware = (
   err: Error,
@@ -18,8 +19,8 @@ export const globalErrorHandlingMiddleware = (
     },
     "Unhandled error occurred",
   );
-  res.status(500).json({
-    status: 500,
+  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    status: StatusCodes.INTERNAL_SERVER_ERROR,
     message: "Internal server error",
   });
 };
