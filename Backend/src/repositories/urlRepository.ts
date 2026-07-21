@@ -23,7 +23,7 @@ const getBaseUrl = async (shortUrl: string) => {
   if (url) {
     return { id: url.id, baseUrl: url.baseUrl };
   }
-  return { id: null, baseUrl: "" };
+  return { id: null, baseUrl: null };
 };
 
 const getStats = async (statsUrl: string) => {

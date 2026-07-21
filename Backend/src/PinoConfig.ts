@@ -4,7 +4,7 @@ import { pinoHttp } from "pino-http";
 import { EnvConfig } from "./EnvConfig";
 
 const streams = [
-  { stream: process.stdout, level: "error" },
+  { stream: process.stderr, level: "error" },
   { stream: pino.destination(`./logs/${EnvConfig.LogsPath}`), level: "trace" },
 ];
 const logger = pino(

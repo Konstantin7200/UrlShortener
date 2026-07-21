@@ -1,6 +1,6 @@
 import { hash, randomInt } from "node:crypto";
 import { Base62 } from "@sindresorhus/base62";
-import { RAND_HASH_ADDITION } from "src/constants";
+import { RAND_HASH_ADDITION } from "../constants";
 
 export const encodeUrl = async (baseUrl: string) => {
   const hashed = BigInt(
@@ -16,14 +16,13 @@ export const encodeUrl = async (baseUrl: string) => {
   return { shortUrl, statsUrl };
 };
 export const isValidLink = (link: string) => {
-  let result;
   const httpStartingRegex = new RegExp(/^https?:\/{2}/g);
-  result = link.match(httpStartingRegex);
-  if (!result || result.length != 1)
+  const httpMatches = link.match(httpStartingRegex);
+  if (!httpMatches || httpMatches.length != 1)
     throw new Error("The link should have http/https at the start");
   const slashesRegex = new RegExp(/:\/{2}/g);
-  result = link.match(slashesRegex);
-  if (!result || result.length != 1)
+  const slashMatches = link.match(slashesRegex);
+  if (!slashMatches || slashMatches.length != 1)
     throw new Error("The link should contain only one pair of slashes");
   if (!link.includes(".")) {
     throw new Error("The link should include a dot");

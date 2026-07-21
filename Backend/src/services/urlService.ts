@@ -11,8 +11,9 @@ import {
 import { addVisitor } from "../repositories/visitorRepository";
 import { encodeUrl, isValidLink } from "../utils/utils";
 import { logger } from "../PinoConfig";
-import { GEO_UNKNOWN, MAX_URL_CREATION_ATTEMPTS } from "src/constants";
+import { GEO_UNKNOWN, MAX_URL_CREATION_ATTEMPTS } from "../constants";
 import { StatusCodes } from "http-status-codes";
+import { AppError } from "../errors/AppError";
 
 type UrlType = "Short" | "Statistics";
 type UrlTypeObject = { type: UrlType };
@@ -40,14 +41,6 @@ type handleUrlResponseType = Promise<
       }[];
     }
 >;
-class AppError extends Error {
-  constructor(
-    message: string,
-    public statusCode: number,
-  ) {
-    super(message);
-  }
-}
 
 const getShortUrlAndRecordVisit = async ({
   shortUrl,
@@ -158,6 +151,5 @@ export {
   createUrl,
   getUrlType,
   handleUrl,
-  AppError,
 };
 export type { UrlTypeObject, UrlType };

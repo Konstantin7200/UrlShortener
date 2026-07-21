@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { AppError, createUrl, handleUrl } from "../services/urlService";
+import { createUrl, handleUrl } from "../services/urlService";
+import { AppError } from "../errors/AppError";
 
 const resolveUrl = async (req: Request, res: Response, next: NextFunction) => {
   const url = req.query.url;
@@ -21,14 +22,6 @@ const resolveUrl = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(StatusCodes.OK).json(result.statistics);
     }
   } catch (err) {
-    if (err instanceof AppError) {
-      if (err.statusCode === StatusCodes.NOT_FOUND) {
-        return res.status(StatusCodes.NOT_FOUND).json({
-          status: StatusCodes.NOT_FOUND,
-          message: "Not found",
-        });
-      }
-    }
     return next(err);
   }
 };
@@ -57,11 +50,6 @@ const resolveUrlCreation = async (
           return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: StatusCodes.INTERNAL_SERVER_ERROR,
             message: "Internal server error",
-          });
-        else
-          return res.status(StatusCodes.BAD_REQUEST).json({
-            status: StatusCodes.BAD_REQUEST,
-            message: err.message,
           });
       }
       return next(err);

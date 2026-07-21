@@ -89,11 +89,10 @@ interface UserDataContProps {
 }
 
 const UserDataCont: FC<UserDataContProps> = ({ data, index }) => {
-  const rowColor = index % 2 === 0 ? "bg-white" : "bg-gray-50";
 
   return (
     <tr
-      className={`${rowColor} hover:bg-blue-50 transition-colors duration-200`}
+      className={index % 2 === 0 ?`bg-white hover:bg-blue-50 transition-colors duration-200`:"bg-gray-50 hover:bg-blue-50 transition-colors duration-200"}
     >
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
         {index}

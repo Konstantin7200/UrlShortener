@@ -5,6 +5,6 @@ dist/
 .DS_Store
 Thumbs.db
 
-/generated/prisma
+generated/prisma
 logs/
 !logs/.gitkeep
