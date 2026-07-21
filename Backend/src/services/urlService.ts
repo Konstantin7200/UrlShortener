@@ -20,6 +20,25 @@ type getShortUrlArgs = {
   ip: string | undefined;
   userAgent: string | undefined;
 };
+type handleUrlArgs = {
+  url: string;
+  ip: string | undefined;
+  userAgent: string | undefined;
+};
+type handleUrlResponseType = Promise<
+  | { type: "Short"; baseUrl: string }
+  | {
+      type: "Statistics";
+      statistics: {
+        ip: string;
+        visitingDate: Date;
+        browser: string;
+        browserVersion: string;
+        region: string;
+        os: string;
+      }[];
+    }
+>;
 const getShortUrlAndRecordVisit = async ({
   shortUrl,
   ip,
@@ -36,14 +55,10 @@ const getShortUrlAndRecordVisit = async ({
     region = "Unknown";
     ipToStore = "Unknown";
   } else {
-    try {
-      ipToStore = ip;
-      region = await locationAPI.getLocation(ip);
-      if (region === "Unknown")
-        logger.warn({ shortUrl, ip }, "Region not determined");
-    } catch (e) {
-      throw Error("External API error");
-    }
+    ipToStore = ip;
+    region = await locationAPI.getLocation(ip);
+    if (region === "Unknown")
+      logger.warn({ shortUrl, ip }, "Region not determined");
   }
   const { browser, os, version } =
     systemSettingsAPI.getSystemSettings(userAgent);
@@ -97,5 +112,36 @@ const getUrlType = async (url: string): Promise<UrlTypeObject> => {
   }
   throw new Error("Url not found");
 };
-export { getShortUrlAndRecordVisit, getStatistics, createUrl, getUrlType };
+const handleUrl = async ({
+  url,
+  userAgent,
+  ip,
+}: handleUrlArgs): handleUrlResponseType => {
+  let urlType: UrlType | null = null;
+  ({ type: urlType } = await getUrlType(url));
+  if (urlType === "Short") {
+    const baseUrl = await getShortUrlAndRecordVisit({
+      shortUrl: url,
+      ip: ip,
+      userAgent: userAgent,
+    });
+    return {
+      type: "Short",
+      baseUrl: baseUrl,
+    };
+  } else {
+    const result = await getStatistics(url);
+    return {
+      type: "Statistics",
+      statistics: result,
+    };
+  }
+};
+export {
+  getShortUrlAndRecordVisit,
+  getStatistics,
+  createUrl,
+  getUrlType,
+  handleUrl,
+};
 export type { UrlTypeObject, UrlType };
