@@ -1,18 +1,13 @@
 import express, { Express } from "express";
-import cors, { CorsOptions } from "cors";
-import { EnvConfig } from "./EnvConfig";
 import { globalErrorHandlingMiddleware } from "./middleware/errorHandlingMiddleware";
 import { registerRoutes } from "./routes";
 import { httpLogger } from "./PinoConfig";
+import { securityHeaders } from "./middleware/securityHeaders";
 
 const app: Express = express();
 
-const corsOptions: CorsOptions = {
-  origin: [EnvConfig.FrontendUrl],
-  methods: ["GET", "POST"],
-};
 
-app.use(cors(corsOptions));
+app.use(securityHeaders);
 app.use(express.json());
 app.use(httpLogger as unknown as express.RequestHandler);
 registerRoutes(app);

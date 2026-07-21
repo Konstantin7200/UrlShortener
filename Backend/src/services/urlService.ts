@@ -11,6 +11,7 @@ import {
 import { addVisitor } from "../repositories/visitorRepository";
 import { encodeUrl, isValidLink } from "../utils/utils";
 import { logger } from "../PinoConfig";
+import { GEO_UNKNOWN, MAX_URL_CREATION_ATTEMPTS } from "src/constants";
 
 type UrlType = "Short" | "Statistics";
 type UrlTypeObject = { type: UrlType };
@@ -52,12 +53,12 @@ const getShortUrlAndRecordVisit = async ({
   let ipToStore = "";
   if (ip === undefined) {
     logger.warn({ shortUrl }, "ip is undefined");
-    region = "Unknown";
-    ipToStore = "Unknown";
+    region = GEO_UNKNOWN;
+    ipToStore = GEO_UNKNOWN;
   } else {
     ipToStore = ip;
     region = await getLocation(ip);
-    if (region === "Unknown")
+    if (region === GEO_UNKNOWN)
       logger.warn({ shortUrl, ip }, "Region not determined");
   }
   const { browser, os, version } = getSystemSettings(userAgent);
@@ -84,13 +85,13 @@ const createUrl = async (baseUrl: string) => {
   let shortUrl = "",
     statsUrl = "";
   let tries = 0;
-  while (tries < 1000) {
+  while (tries < MAX_URL_CREATION_ATTEMPTS) {
     ({ shortUrl, statsUrl } = await encodeUrl(baseUrl));
     const isCollision = await checkCollision(shortUrl, statsUrl);
     if (!isCollision) break;
     tries++;
   }
-  if (tries === 1000) {
+  if (tries === MAX_URL_CREATION_ATTEMPTS) {
     logger.error("The tries limit on url creation was reached");
     throw Error("Url not created");
   }
@@ -116,8 +117,7 @@ const handleUrl = async ({
   userAgent,
   ip,
 }: handleUrlArgs): handleUrlResponseType => {
-  let urlType: UrlType | null = null;
-  ({ type: urlType } = await getUrlType(url));
+  const { type: urlType } = await getUrlType(url)
   if (urlType === "Short") {
     const baseUrl = await getShortUrlAndRecordVisit({
       shortUrl: url,
