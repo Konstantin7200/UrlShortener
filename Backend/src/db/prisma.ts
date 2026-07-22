@@ -2,9 +2,11 @@ import { EnvConfig } from "../EnvConfig";
 import { PrismaClient } from "../../generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-declare global { var prisma: PrismaClient | undefined }
+declare global {
+  var prisma: PrismaClient | undefined;
+}
 
-const globalForPrisma = globalThis 
+const globalForPrisma = globalThis;
 
 export const prisma =
   globalForPrisma.prisma ??

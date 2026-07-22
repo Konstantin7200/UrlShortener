@@ -61,10 +61,8 @@ const getShortUrlAndRecordVisit = async ({
     ipToStore = ip;
     try {
       region = await getLocation(ip);
-      if (region === GEO_UNKNOWN)
-        logger.warn({ shortUrl, ip }, "Region not determined");
     } catch (err) {
-      if (err instanceof Error) logger.error(err.message);
+      if (err instanceof Error) logger.warn({ shortUrl, ip }, err.message);
       region = GEO_UNKNOWN;
     }
   }

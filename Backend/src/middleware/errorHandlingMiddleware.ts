@@ -9,9 +9,8 @@ export const globalErrorHandlingMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  let statusCode = null
-  if (err instanceof AppError)
-    statusCode = err.statusCode
+  let statusCode = null;
+  if (err instanceof AppError) statusCode = err.statusCode;
   if (statusCode != null) {
     logger.error(
       {
@@ -21,7 +20,7 @@ export const globalErrorHandlingMiddleware = (
         path: req.path,
         method: req.method,
         ip: req.ip,
-        statusCode: statusCode
+        statusCode: statusCode,
       },
       "Unhandled error occurred",
     );
@@ -29,8 +28,7 @@ export const globalErrorHandlingMiddleware = (
       status: statusCode,
       message: err.message,
     });
-  }
-  else {
+  } else {
     logger.error(
       {
         message: err.message,
