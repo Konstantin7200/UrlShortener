@@ -45,13 +45,6 @@ const resolveUrlCreation = async (
         statisticsUrl: statsUrl,
       });
     } catch (err) {
-      if (err instanceof AppError) {
-        if (err.statusCode === StatusCodes.INTERNAL_SERVER_ERROR)
-          return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            status: StatusCodes.INTERNAL_SERVER_ERROR,
-            message: "Internal server error",
-          });
-      }
       return next(err);
     }
   }

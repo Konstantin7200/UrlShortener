@@ -11,8 +11,8 @@ export async function getLocation(ip: string) {
   if (!response.ok) {
     throw new Error(`Geolocation API responded with ${response.status}` );
   }
-  const raw: unknown = await response.json();
-  const data = raw as locationApiData;
+  const data = await response.json() as locationApiData;
+
   if (!data.country || !data.city) {
     logger.warn({ ip }, "Geolocation returned empty fields");
     return GEO_UNKNOWN;
