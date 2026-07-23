@@ -15,8 +15,10 @@ A full-stack URL shortener with visitor analytics. Built with React 19, Express 
 │   ├── prisma/                # Prisma schema and migrations
 │   ├── src/
 │   │   ├── api/               # External API calls (IP geolocation, UA parsing)
+│   │   ├── constants.ts       # Shared constants (limits, geo, hash config)
 │   │   ├── controllers/       # Request handlers
 │   │   ├── db/                # Prisma client and SQL schema
+│   │   ├── errors/            # Custom error classes (AppError)
 │   │   ├── middleware/        # Error handling middleware
 │   │   ├── repositories/      # Database access layer (Prisma queries)
 │   │   ├── routes/            # Express route definitions
@@ -88,11 +90,6 @@ The dev server starts on `http://localhost:5173`.
 
 **Backend/.env**
 ```
-PGUSER=yourUser
-PGPASSWORD=yourPassword
-PGHOST=localhost
-PGPORT=5432
-PGDATABASE=urldb
 FRONTEND_URL=http://localhost:5173
 PORT=3000
 LOGSPATH=app.log
