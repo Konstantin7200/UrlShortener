@@ -17,7 +17,7 @@ export const API = {
     if (response.status != StatusCodes.OK) {
       let message: string = "";
       try {
-        let data = await response.json();
+        const data = await response.json();
         message = data.message;
       } catch {}
       return {
@@ -46,7 +46,7 @@ export const API = {
     if (response.status != StatusCodes.CREATED) {
       let message: string = "";
       try {
-        let data = await response.json();
+        const data = await response.json();
         message = data.message;
       } catch {}
       return {

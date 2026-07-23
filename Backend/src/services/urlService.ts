@@ -87,7 +87,9 @@ const createUrl = async (baseUrl: string) => {
   } catch (err) {
     if (err instanceof Error) {
       throw new AppError(err.message, StatusCodes.BAD_REQUEST);
-    }
+    }   
+    logger.error(err,"Invalid link")
+    throw new AppError("Invalid link", StatusCodes.BAD_REQUEST);
   }
   let shortUrl = "",
     statsUrl = "";

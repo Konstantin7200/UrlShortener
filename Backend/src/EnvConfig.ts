@@ -7,11 +7,6 @@ function requireEnv(name: string): string {
 }
 
 export const EnvConfig = {
-  PgUser: requireEnv("PGUSER"),
-  PgPassword: requireEnv("PGPASSWORD"),
-  PgHost: requireEnv("PGHOST"),
-  PgPort: requireEnv("PGPORT"),
-  PgDatabase: requireEnv("PGDATABASE"),
   FrontendUrl: requireEnv("FRONTEND_URL"),
   Port: requireEnv("PORT"),
   LogsPath: requireEnv("LOGSPATH"),

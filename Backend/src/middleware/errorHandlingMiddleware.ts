@@ -9,9 +9,25 @@ export const globalErrorHandlingMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  let statusCode = null;
-  if (err instanceof AppError) statusCode = err.statusCode;
-  if (statusCode != null) {
+  const statusCode = err instanceof AppError ? err.statusCode : null;
+  if (statusCode === null) {
+    logger.error(
+      {
+        message: err.message,
+        stack: err.stack,
+        name: err.name,
+        path: req.path,
+        method: req.method,
+        ip: req.ip,
+      },
+      "Unhandled error occurred",
+    );
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      message: "Internal server error",
+    });
+  } else {
+
     logger.error(
       {
         message: err.message,
@@ -27,22 +43,6 @@ export const globalErrorHandlingMiddleware = (
     res.status(statusCode).json({
       status: statusCode,
       message: err.message,
-    });
-  } else {
-    logger.error(
-      {
-        message: err.message,
-        stack: err.stack,
-        name: err.name,
-        path: req.path,
-        method: req.method,
-        ip: req.ip,
-      },
-      "Unhandled error occurred",
-    );
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      status: StatusCodes.INTERNAL_SERVER_ERROR,
-      message: "Internal server error",
     });
   }
 };

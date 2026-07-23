@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { createUrl, handleUrl } from "../services/urlService";
-import { AppError } from "../errors/AppError";
 
 const resolveUrl = async (req: Request, res: Response, next: NextFunction) => {
   const url = req.query.url;
